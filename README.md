@@ -7,6 +7,7 @@ Use TFRecord Viewer to browse contents of TFRecords with object detection/classi
 The viewer runs a Flask server to provide a web gallery with annotation overlays.
 I.e. you can run it on your server machine, but browse on your local machine.
 
+The web gallery displayed with [Fotorama.io](https://fotorama.io/).
 
 # Examples
 
