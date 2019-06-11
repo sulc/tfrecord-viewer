@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2019 sulc
+Copyright (c) 2019 Milan Sulc
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+==============================================================================
+Note: The used font (fonts/OpenSans-Regular.ttf) has a different license (Apache 2.0, see fonts/LICENSE)
