@@ -5,6 +5,7 @@ import argparse
 
 import tensorflow as tf
 from flask import Flask, render_template, send_file
+from waitress import serve
 
 from overlays import overlay_factory
 
@@ -140,5 +141,5 @@ if __name__ == "__main__":
   print("Pre-loading up to %d examples.." % args.max_images)
   count = preload_images(args.max_images)
   print("Loaded %d examples" % count)
-  app.run(host=args.host, port=args.port)
+  serve(app, host=args.host, port=args.port)
 
