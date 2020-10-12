@@ -102,6 +102,8 @@ class DetectionOverlay:
       draw.text((xmin+4, ymin), label, fill=self.bbox_color(label), font=self.font)
 
     with io.BytesIO() as output:
+      if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
       img.save(output, format="JPEG")
       output_image = output.getvalue()
     return output_image
