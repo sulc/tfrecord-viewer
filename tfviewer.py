@@ -83,7 +83,7 @@ def preload_images(max_images):
 
   for tfrecord_path in args.tfrecords:
     print("Filename: ", tfrecord_path)
-    for i, record in enumerate(tf.python_io.tf_record_iterator(tfrecord_path)):
+    for i, record in enumerate(tf.compat.v1.python_io.tf_record_iterator(tfrecord_path)):
       if args.verbose: print("######################### Record", i, "#########################")
       example = tf.train.Example()
       example.ParseFromString(record)
