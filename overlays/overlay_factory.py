@@ -5,6 +5,9 @@ from . import classification_overlay
 
 class EmptyOverlay:
   """ Class for empty overlay."""
+  def __init__(self, args):
+    self.args = args
+
   def apply_overlay(self, image_bytes, feature):
     return image_bytes
 
