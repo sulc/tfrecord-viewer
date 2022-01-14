@@ -4,14 +4,17 @@ import io
 import argparse
 
 import tensorflow as tf
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_file, request, Response
+
+from functools import wraps
+
 
 from overlays import overlay_factory
 
 app = Flask(__name__)
 
 parser = argparse.ArgumentParser(description='TF Record viewer.')
-parser.add_argument('tfrecords', type=str, nargs='+',
+parser.add_argument('tfrecords', type=str, nargs='+',e
                     help='path to TF record(s) to view')
 
 parser.add_argument('--image-key', type=str, default="image/encoded",
@@ -34,6 +37,12 @@ parser.add_argument("-v", "--verbose", help="increase output verbosity",
 
 parser.add_argument('--overlay', type=str, default="detection",
                     help='Overlay to display. (detection/classification/none)')
+
+parser.add_argument('--username', type=str, default="",
+                    help='Username to open the webpage. If username and password are empty, no login is required.')
+
+parser.add_argument('--password', type=str, default="",
+                    help='Password to open the webpage. If username and password are empty, no login is required.')
 
 
 #######################################
@@ -112,7 +121,35 @@ def preload_images(max_images):
 
 
 
+
+## Password authentification
+
+def check_auth(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    return username == args.username and password == args.password
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*f_args, **f_kwargs):
+        if args.username != "" or args.password != "":
+          auth = request.authorization
+          if not auth or not check_auth(auth.username, auth.password):
+              return authenticate()
+        return f(*f_args, **f_kwargs)
+    return decorated
+
+
 @app.route('/')
+@requires_auth
 def frontpage():
   html = ""
   for i,filename in enumerate(filenames):
@@ -120,6 +157,7 @@ def frontpage():
   return render_template('gallery.html', header=args.tfrecords, images=html)
 
 @app.route('/image/<key>')
+@requires_auth
 def get_image(key):
   """Get image by key (index) from images preloaded when starting the viewer by preload_images().
   """
