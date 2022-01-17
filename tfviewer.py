@@ -104,19 +104,14 @@ def preload_images(max_images):
   count = 0
   overlay = overlay_factory.get_overlay(args.overlay, args)
 
-  try:
-    tf_record_iterator = tf.python_io.tf_record_iterator
-  except:
-    tf_record_iterator = tf.compat.v1.python_io.tf_record_iterator
-  
-
-
   for tfrecord_path in args.tfrecords:
+    tf_record_iterator = tf.data.TFRecordDataset(tfrecord_path)
+
     print("Filename: ", tfrecord_path)
-    for i, record in enumerate(tf_record_iterator(tfrecord_path)):
+    for i, record in enumerate(tf_record_iterator):
       if args.verbose: print("######################### Record", i, "#########################")
       example = tf.train.Example()
-      example.ParseFromString(record)
+      example.ParseFromString(record.numpy())
       if len(images) < max_images:
         image_bytes =  example.features.feature[args.image_key].bytes_list.value[0]
         img_with_overlay = overlay.apply_overlay(image_bytes, example)
