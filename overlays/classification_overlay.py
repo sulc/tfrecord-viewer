@@ -9,25 +9,25 @@ highlight_color = 'red'
 class ClassificationOverlay:
   
   def __init__(self, args):
+    self.image_key = args.image_key
     self.class_label_key = args.class_label_key
     self.font = ImageFont.truetype("./fonts/OpenSans-Regular.ttf", 12)
 
 
-  def apply_overlay(self, image_bytes, feature):
+  def apply_overlay(self, image_bytes, example):
     """Apply annotation overlay over input image.
     
     Args:
-      image_bytes: JPEG image.
-      feature: TF Record Feature
+      image_bytes: JPEG image
+      example: TF Example - such as via tf.train.Example().ParseFromString(record)
 
     Returns:
       image_bytes_with_overlay: JPEG image with annotation overlay.
     """
-
     img = Image.open(io.BytesIO(image_bytes))
     draw = ImageDraw.Draw(img)
 
-    class_label = self.get_label(feature)
+    class_label = self.get_label(example.features.feature)
 
     w, h = self.font.getsize(class_label)
     draw.rectangle((10, 10, 14 + w, 10 + h), fill="white")

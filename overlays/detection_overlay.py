@@ -13,18 +13,18 @@ class DetectionOverlay:
     self.labels_to_highlight = args.labels_to_highlight.split(";")
     self.font = ImageFont.truetype("./fonts/OpenSans-Regular.ttf", 12)
 
-  def apply_overlay(self, image_bytes, feature):
+  def apply_overlay(self, image_bytes, example):
     """Apply annotation overlay over input image.
     
     Args:
-      image_bytes: JPEG image.
-      feature: TF Record Feature
+      image_bytes: JPEG image
+      example: TF Example - such as via tf.train.Example().ParseFromString(record)
 
     Returns:
       image_bytes_with_overlay: JPEG image with annotation overlay.
     """
-
-    bboxes = self.get_bbox_tuples(feature)
+  
+    bboxes = self.get_bbox_tuples(example.features.feature)
     image_bytes_with_overlay = self.draw_bboxes(image_bytes, bboxes)
     return image_bytes_with_overlay
 

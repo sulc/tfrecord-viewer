@@ -1,4 +1,5 @@
 
+from . import semantic_segmentation_overlay
 from . import detection_overlay
 from . import classification_overlay
 
@@ -8,13 +9,14 @@ class EmptyOverlay:
   def __init__(self, args):
     self.args = args
 
-  def apply_overlay(self, image_bytes, feature):
+  def apply_overlay(self, image_bytes, example):
     return image_bytes
 
 
 overlay_map = {
   'detection': detection_overlay.DetectionOverlay,
   'classification': classification_overlay.ClassificationOverlay,
+  'segmentation': semantic_segmentation_overlay.SemanticSegmentationOverlay,
   'none': EmptyOverlay
 }
 

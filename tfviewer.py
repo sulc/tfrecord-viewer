@@ -14,7 +14,7 @@ from overlays import overlay_factory
 app = Flask(__name__)
 
 parser = argparse.ArgumentParser(description='TF Record viewer.')
-parser.add_argument('tfrecords', type=str, nargs='+',e
+parser.add_argument('tfrecords', type=str, nargs='+',
                     help='path to TF record(s) to view')
 
 parser.add_argument('--image-key', type=str, default="image/encoded",
@@ -29,14 +29,14 @@ parser.add_argument('--max-images', type=int, default=200,
 parser.add_argument('--host', type=str, default="0.0.0.0",
                     help='host/IP to start the Flask server.')
 
-parser.add_argument('--port', type=int, default=5000,
+parser.add_argument('--port', type=int, default=8080,
                     help='Port to start the Flask server.')
 
 parser.add_argument("-v", "--verbose", help="increase output verbosity",
                     action="store_true")
 
 parser.add_argument('--overlay', type=str, default="detection",
-                    help='Overlay to display. (detection/classification/none)')
+                    help='Overlay to display. (detection/classification/segmentation/none)')
 
 parser.add_argument('--username', type=str, default="",
                     help='Username to open the webpage. If username and password are empty, no login is required.')
@@ -67,6 +67,20 @@ parser.add_argument('--labels-to-highlight', type=str, default="car",
 parser.add_argument('--class-label-key', type=str, default="image/class/text",
                     help='Key to the image class label.')
 
+
+############################################
+# Semantic segmentation specific arguments #
+parser.add_argument('--segmap-key', type=str, default="image/segmentation/class/encoded",
+                    help='Key to the image segmentation map.')
+
+parser.add_argument('--segmap-format-key', type=str, default="image/segmentation/class/format",
+                    help='Key to the format of the segmentation map. (raw/png/..)')
+
+parser.add_argument('--segmap-raw-divisor-key', type=int, default=256,
+                    help='Divisor of the label for "raw" segmaps (as in panoptic segmentation.)')
+
+parser.add_argument('--segmap-colormap-file', type=str, default=None,
+                    help='Path to file with colormap, e.g "./cityscapes_colormap.txt".')
 
 args = parser.parse_args()
 
@@ -103,14 +117,11 @@ def preload_images(max_images):
       if args.verbose: print("######################### Record", i, "#########################")
       example = tf.train.Example()
       example.ParseFromString(record)
-      feat = example.features.feature
-
       if len(images) < max_images:
-        filename = feat[args.filename_key].bytes_list.value[0].decode("utf-8")
-        img =  feat[args.image_key].bytes_list.value[0]
+        image_bytes =  example.features.feature[args.image_key].bytes_list.value[0]
+        img_with_overlay = overlay.apply_overlay(image_bytes, example)
         
-        img_with_overlay = overlay.apply_overlay(img, feat)
-
+        filename = example.features.feature[args.filename_key].bytes_list.value[0].decode("utf-8")
         filenames.append(filename)
         images.append(img_with_overlay)
         captions.append( tfrecord_path + ":" + filename )
