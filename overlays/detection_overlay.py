@@ -7,15 +7,19 @@ highlight_color = 'red'
 
 
 class DetectionOverlay:
-  
+
   def __init__(self, args):
     self.args = args
     self.labels_to_highlight = args.labels_to_highlight.split(";")
-    self.font = ImageFont.truetype("./fonts/OpenSans-Regular.ttf", 12)
+    try:
+      self.font = ImageFont.truetype("./fonts/OpenSans-Regular.ttf", 12)
+    except OSError:
+      self.font = ImageFont.load_default()
+
 
   def apply_overlay(self, image_bytes, example):
     """Apply annotation overlay over input image.
-    
+
     Args:
       image_bytes: JPEG image
       example: TF Example - such as via tf.train.Example().ParseFromString(record)
@@ -31,7 +35,7 @@ class DetectionOverlay:
 
   def get_bbox_tuples(self, feature):
     """ From a TF Record Feature, get a list of tuples representing bounding boxes
-    
+
     Args:
       feature: TF Record Feature
     Returns:
@@ -66,7 +70,7 @@ class DetectionOverlay:
       bboxes (tuple): (label, xmin, xmax, ymin, ymax)
       im_width (int): image width in pixels
       im_height (int): image height in pixels
-    
+
     Returns:
       bboxes (tuple): (label, xmin, xmax, ymin, ymax)
     """
@@ -78,11 +82,11 @@ class DetectionOverlay:
 
   def draw_bboxes(self, image_bytes, bboxes):
     """Draw bounding boxes onto image.
-    
+
     Args:
       image_bytes: JPEG image.
       bboxes (list of tuples): [ (label, xmin, xmax, ymin, ymax), (label, xmin, xmax, ymin, ymax) , .. ]
-    
+
     Returns:
       image_bytes: JPEG image including bounding boxes.
     """
