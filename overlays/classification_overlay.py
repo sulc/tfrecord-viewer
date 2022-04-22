@@ -29,10 +29,16 @@ class ClassificationOverlay:
 
     class_label = self.get_label(example.features.feature)
 
-    w, h = self.font.getsize(class_label)
-    draw.rectangle((10, 10, 14 + w, 10 + h), fill="white")
+    # draw label over bounding box
+    w, h = self.font.getsize(label)
+    draw.rectangle((xmin, ymin - 2, xmin + w + 4, ymin - h - 4), fill="white")
 
-    draw.text((10, 10), class_label, fill='blue', font=self.font)
+    draw.text(
+        (xmin + 2, ymin - h - 4),
+        label,
+        fill=self.bbox_color(label),
+        font=self.font,
+    )
 
     with io.BytesIO() as output:
       img.save(output, format="JPEG")
