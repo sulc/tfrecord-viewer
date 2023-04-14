@@ -171,7 +171,7 @@ def get_image(key):
   img = images[key]
   img_buffer = io.BytesIO(img)
   return send_file(img_buffer,
-                   attachment_filename=str(key)+'.jpeg',
+                   download_name=str(key)+'.jpeg',
                    mimetype='image/jpg')
 
 @app.after_request
